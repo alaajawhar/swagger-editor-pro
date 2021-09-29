@@ -1,0 +1,9 @@
+.btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.search-bar:focus {
+  outline: none;
+  box-shadow: none;
+}
