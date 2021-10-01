@@ -9,17 +9,9 @@ import { swagger } from './generateSwaggerByAlaa.service';
 })
 export class BrowseDisplayApisComponent implements OnInit {
   fileName: string = '';
-  json: object | undefined;
-  originalSwaggerApis: ApiBrief[] = [
-    new ApiBrief('PATCH', 'map/v3/createUser', false),
-    new ApiBrief('PATCH', 'map/v3/createUser', false),
-    new ApiBrief('PATCH', 'map/v3/createUser', false)
-  ];
-  newSwaggerApis: ApiBrief[] = [
-    new ApiBrief('PATCH', 'map/v3/createUser', false),
-    new ApiBrief('PATCH', 'map/v3/createUser', false)
-
-  ];
+  searchText: string='';
+  swaggerCode: any;
+  apiBriefsArray: ApiBrief[] = new Array<ApiBrief>();
 
 
   constructor() { }
@@ -35,19 +27,51 @@ export class BrowseDisplayApisComponent implements OnInit {
     this.fileName = event.target.files[0].name;
     const reader = new FileReader();
     reader.onload = event => {
-      console.log(event.target.result)
-      swagger(event.target.result);
-      this.json = JSON.parse(event.target.result);
-      console.log(this.json)
+      this.swaggerCode = new swagger(event.target!.result);
+      // swaggerCode.add("/AccountTransfer/v2/Inquiry","post");
+      // console.log(swaggerCode.create())
+      this.apiBriefsArray=this.swaggerCode.extractApisPathVerb();
     }
     reader.readAsText(event.target.files[0])
   }
 
-  addApiClick() {
-    console.log('added')
+  addApiClick(apiBrief: ApiBrief) {
+     let index: number = this.apiBriefsArray.findIndex(api =>{
+      return api.endpoint===apiBrief.endpoint && api.verb===apiBrief.verb
+    })
+    this.apiBriefsArray[index].selected = !this.apiBriefsArray[index].selected;
   }
 
+  onGenerate(){
+    this.apiBriefsArray.filter( api =>{
+      return api.selected === true
+    }).forEach(api=>{
+      console.log(api.endpoint)
+      this.swaggerCode.add(api.endpoint,api.verb);
+    })
+    console.log(this.swaggerCode.create())
 
+  }
+
+  //@ts-ignore
+  buttonColor(apiVerb: string){
+    if(apiVerb === 'post'){
+      return 'btn-outline-success';
+    }
+
+    if(apiVerb === 'get'){
+      return 'btn-outline-primary';
+    }
+
+    if(apiVerb === 'put'){
+      return 'btn-outline-warning';
+    }
+
+    if(apiVerb === 'delete'){
+      return 'btn-outline-danger';
+    }
+    return 'btn-outline-secondary'
+  }
 }
 
 // constructor(
