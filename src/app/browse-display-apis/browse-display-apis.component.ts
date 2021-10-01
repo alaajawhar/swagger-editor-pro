@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
 import { ApiBrief } from '../models/Api-brief.model';
-import *  as action from '../store/swagger.action';
+import { swagger } from './generateSwaggerByAlaa.service';
 
 @Component({
   selector: 'app-browse-display-apis',
@@ -11,12 +9,20 @@ import *  as action from '../store/swagger.action';
 })
 export class BrowseDisplayApisComponent implements OnInit {
   fileName: string = '';
-  originalSwaggerApis: ApiBrief[] = [];
-  swaggerApis: ApiBrief[] = [];
+  json: object | undefined;
+  originalSwaggerApis: ApiBrief[] = [
+    new ApiBrief('PATCH', 'map/v3/createUser', false),
+    new ApiBrief('PATCH', 'map/v3/createUser', false),
+    new ApiBrief('PATCH', 'map/v3/createUser', false)
+  ];
+  newSwaggerApis: ApiBrief[] = [
+    new ApiBrief('PATCH', 'map/v3/createUser', false),
+    new ApiBrief('PATCH', 'map/v3/createUser', false)
+
+  ];
 
 
-  constructor(
-    private orginalSwaggerStore: Store<{ swaggerApis: { swagger: ApiBrief[] } }>) { }
+  constructor() { }
 
   ngOnInit(): void {
 
@@ -27,24 +33,25 @@ export class BrowseDisplayApisComponent implements OnInit {
       return;
     }
     this.fileName = event.target.files[0].name;
-
     const reader = new FileReader();
-    // @ts-ignore
-    reader.onload = event => console.log(event.target.result)
+    reader.onload = event => {
+      console.log(event.target.result)
+      swagger(event.target.result);
+      this.json = JSON.parse(event.target.result);
+      console.log(this.json)
+    }
     reader.readAsText(event.target.files[0])
   }
 
-  addApiToBeGenerated() {
+  addApiClick() {
     console.log('added')
-  }
-
-  deleteApiFromToBeGenerated() {
-    console.log('delete')
   }
 
 
 }
 
+// constructor(
+//   private orginalSwaggerStore: Store<{ swaggerApis: { swagger: ApiBrief[] } }>) { }
     // // ADD NEW API
     // this.orginalSwaggerStore.dispatch(new action.AddApiAction(new ApiBrief('DELETE', 'map/v3/deleteUser', false)));
 
