@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiBrief } from '../models/Api-brief.model';
 import { swagger } from './generateSwaggerByAlaa.service';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-browse-display-apis',
@@ -10,7 +11,8 @@ import { swagger } from './generateSwaggerByAlaa.service';
 export class BrowseDisplayApisComponent implements OnInit {
   fileName: string = '';
   searchText: string='';
-  swaggerCode: any;
+  //@ts-ignore
+  swaggerCode: swagger;
   apiBriefsArray: ApiBrief[] = new Array<ApiBrief>();
 
 
@@ -28,8 +30,6 @@ export class BrowseDisplayApisComponent implements OnInit {
     const reader = new FileReader();
     reader.onload = event => {
       this.swaggerCode = new swagger(event.target!.result);
-      // swaggerCode.add("/AccountTransfer/v2/Inquiry","post");
-      // console.log(swaggerCode.create())
       this.apiBriefsArray=this.swaggerCode.extractApisPathVerb();
     }
     reader.readAsText(event.target.files[0])
@@ -42,16 +42,34 @@ export class BrowseDisplayApisComponent implements OnInit {
     this.apiBriefsArray[index].selected = !this.apiBriefsArray[index].selected;
   }
 
-  onGenerate(){
+  onGenerateFile(){
     this.apiBriefsArray.filter( api =>{
       return api.selected === true
     }).forEach(api=>{
       console.log(api.endpoint)
       this.swaggerCode.add(api.endpoint,api.verb);
     })
-    console.log(this.swaggerCode.create())
-
+    const swaggerText = this.swaggerCode.create();
+    // @ts-ignore
+    const blob = new Blob([swaggerText], { type: 'text/txt' });
+    saveAs(blob, 'swagger.json')
   }
+
+  onOpenFile(){
+    this.apiBriefsArray.filter( api =>{
+      return api.selected === true
+    }).forEach(api=>{
+      console.log(api.endpoint)
+      this.swaggerCode.add(api.endpoint,api.verb);
+    })
+    const swaggerText = this.swaggerCode.create();
+    // @ts-ignore
+    const blob = new Blob([swaggerText], { type: 'text/txt' });
+    const url= window.URL.createObjectURL(blob);
+    window.open(url);
+  }
+
+  
 
   //@ts-ignore
   buttonColor(apiVerb: string){

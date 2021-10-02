@@ -4,14 +4,20 @@
       <form class="d-flex w-75">
         <input class="form-control me-2 w-75 search-bar" [(ngModel)]="searchText" name="searchText" type="search"
           aria-label="Search" placeholder="Search" />
-        <button class="btn btn-outline-success me-2" type="button"><i class="bi bi-search"></i></button>
         <label for="files" class="btn btn-outline-success" type="button"><i class="bi bi-upload"></i></label>
         <small class="align-self-end w-100 ps-3">{{fileName}}</small>
         <input id="files" style="visibility:hidden;" type="file" (change)="onFileSelected($event)">
       </form>
-      <button class="btn btn-outline-success float-right me-4" type="button" (click)="onGenerate()"
-        *ngIf="(apiBriefsArray | filterApisIfSelected:'').length !==0">Generate <i
-          class="bi bi-arrow-bar-right"></i></button>
+      <div class="dropdown">
+        <button class="btn btn-outline-success float-right me-4 dropdown-toggle" type="button" id="dropdownMenuButton1"
+          data-bs-toggle="dropdown" aria-expanded="false" *ngIf="(apiBriefsArray | filterApisIfSelected:'').length !==0">
+          Generate <i class="bi bi-arrow-bar-right"></i>
+        </button>
+        <ul class="dropdown-menu w-50" aria-labelledby="dropdownMenuButton1">
+          <li (click)="onGenerateFile()"><a class="dropdown-item">Download</a></li>
+          <li (click)="onOpenFile()"><a class="dropdown-item" >Open</a></li>
+        </ul>
+      </div>
     </div>
   </nav>
 
@@ -44,7 +50,7 @@
               {{buttonColor(api.verb)}}
             " (click)="addApiClick(api)">
         <span><span class="pe-4">{{api.verb | uppercase}}</span><span>{{api.endpoint}}</span></span>
-        <i class="bi bi-plus-circle-fill text-end"></i>
+        <i class="bi bi-dash-circle-fill text-end"></i>
       </button>
     </div>
 

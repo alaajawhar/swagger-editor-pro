@@ -234,6 +234,6 @@ export class swagger {
       throw "Alaa's Error\nDefinition is undefined\nchange the swagger definitions to 'definitions'";
       return;
     }
-    return swaggertext;
+    return JSON.stringify(swaggertext,null,4);
   }
 }
